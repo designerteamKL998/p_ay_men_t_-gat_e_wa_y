@@ -2,7 +2,7 @@ const methods = {
   online:{label:'Online Transfer', channels:['vaderpay','help2pay','payessence']},
   qr:{label:'DuitNow QR', channels:['vaderpayc1','vaderpayc2','eziepayqr']},
   bank:{label:'Bank In Transfer', channels:['banktransfer']},
-  wallet:{label:'E-Wallet', channels:['vaderpayc1','vaderpayc2','eziepayqr']},
+  wallet:{label:'E-Wallet', channels:['vaderpayc1','a9wallet','payessence','payjom','bigpayz','eziepay']},
   crypto:{label:'Crypto', channels:['usdt']}
 };
 const channels = {
@@ -11,10 +11,10 @@ const channels = {
   vaderpayc2:{name:'VADERPAY (C2)',mark:'VP',logo:'assets/vaderpay.png',type:'DuitNow QR',time:'Instant',min:10,max:10000,fee:'Free'},
   payessence:{name:'Pay Essence',mark:'PE',logo:'assets/payEssence.svg',type:'Online Transfer',time:'Instant–5 mins',min:10,max:30000,featured:true,fee:'Free'},
   help2pay:{name:'Help2Pay',mark:'H2',logo:'assets/helppay2.svg',type:'Online Transfer',time:'Under maintenance',min:10,max:10000,disabled:true,fee:'Free'},
-  a9wallet:{name:'A9Wallet',mark:'A9',logo:'assets/a9.svg',type:'E-Wallet',time:'Instant',min:20,max:10000,featured:true,fee:'Free'},
+  a9wallet:{name:'A9Wallet',mark:'A9',logo:'assets/a9-03.svg',type:'E-Wallet',time:'Instant',min:20,max:10000,featured:true,fee:'Free'},
   touchngo:{name:'Touch ’n Go',mark:'TNG',logo:'assets/touchngo.png',type:'E-Wallet',time:'Instant',min:20,max:10000,featured:true,fee:'Free'},
-  payjom:{name:'PayJom',mark:'PJ',type:'E-Wallet',time:'Instant',min:20,max:15000,fee:'Free'},
-  bigpayz:{name:'BigPayz',mark:'BP',type:'E-Wallet',time:'1–5 mins',min:20,max:10000,fee:'Free'},
+  payjom:{name:'PayJom',mark:'payjom',logo:'assets/payjom.svg',type:'E-Wallet',time:'Instant',min:20,max:15000,fee:'Free'},
+  bigpayz:{name:'BigPayz',mark:'bigpayz',logo:'assets/bigpayz.svg',type:'E-Wallet',time:'1–5 mins',min:20,max:10000,fee:'Free'},
   eziepay:{name:'EeziePay',mark:'EZ',logo:'assets/eeziepay.svg',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
   eziepayqr:{name:'EeziePay',mark:'EZ',logo:'assets/eeziepay.svg',type:'DuitNow QR',time:'Instant',min:40,max:500,fee:'Free'},
   banktransfer:{name:'Local Bank Transfer',mark:'BT',type:'Bank Transfer',time:'Review in 5–15 mins',min:20,max:30000,fee:'Free'},
@@ -23,44 +23,41 @@ const channels = {
 const onlineBankOptions = ['Affin Bank','AmBank','Bank Simpanan Nasional','Hong Leong Bank','Maybank','Public Bank Berhad','RHB Bank','CIMB Bank','Bank Islam','Bank Rakyat','Alliance Bank','OCBC Bank','UOB Bank'];
 const bankTransferOptions = ['Maybank','Alliance'];
 const bankAccount = { name:'JH AUTO MOBILE', number:'560102718204' };
-let state={method:'online',channel:'vaderpay',filter:'all',amount:'',bank:'',cryptoNetwork:'TRC20-USDT'};
+let state={method:'online',channel:'vaderpay',filter:'all',amount:'',bank:'',cryptoNetwork:'TRC20-USDT',walletPayment:'duitNow'};
 const $=s=>document.querySelector(s);
 function money(n){return `MYR ${Number(n).toLocaleString('en-MY')}`}
 function render(){renderTabs();renderChannels();renderSummary();renderForm()}
 function renderTabs(){const methodIcons={online:'assets/onlinetransfer.svg',qr:'assets/duitNow.svg',bank:'assets/bankIn.svg',wallet:'assets/touchNgo.svg',crypto:'assets/tether.svg'};$('#categoryTabs').innerHTML=Object.entries(methods).map(([id,m])=>`<button class="category-tab ${state.method===id?'active':''}" onclick="setMethod('${id}')"><img src="${methodIcons[id]}" class="category-tab-icon" alt=""><span>${m.label}</span></button>`).join('')}
 function renderChannels(){
- // Remove any previously rendered Online Transfer bank selector before rebuilding the channel area.
- document.querySelectorAll('#onlineBankSelection, .bank-selection, .accepts-payment').forEach(el=>el.remove());
- if(state.method==='bank'){
-   $('#channelTitle').textContent='Choose a receiving bank';
-   $('#channelSubtitle').textContent='Select the bank account you will transfer funds to.';
-   $('#filterBtn').classList.add('hidden');$('#filterRow').classList.add('hidden');
-   $('#channelGrid').innerHTML=`<div class="bank-selector"><label class="form-label bank-label">Bank options <span class="required">*</span></label><div class="bank-option-tabs">${bankTransferOptions.map(bank=>`<button class="bank-tile ${state.bank===bank?'selected':''}" onclick="chooseBank('${bank}')"><img src="assets/${bank==='Maybank'?'maybank':'alliance'}.svg" alt="${bank}"><span>${bank}</span></button>`).join('')}</div><p class="bank-helper">Select the bank you will use for this transfer.</p>${bankAccountDetails()}</div>`;
-   return;
- }
- if(state.method==='crypto'){
-   $('#channelTitle').textContent='Choose a crypto network';
-   $('#channelSubtitle').textContent='Select the USDT network you will use for this deposit.';
-   $('#filterBtn').classList.add('hidden');$('#filterRow').classList.add('hidden');
-   $('#channelGrid').innerHTML=['TRC20-USDT','ERC20-USDT'].map(network=>`<button class="crypto-network-card ${state.cryptoNetwork===network?'selected':''}" onclick="setCryptoNetwork('${network}')"><span class="crypto-network-symbol">₮</span><span><b>${network}</b><small>${network.startsWith('TRC')?'Lower network fee':'Ethereum network'}</small></span><span class="check">✓</span></button>`).join('');
-   return;
- }
- $('#channelTitle').textContent='Choose a payment channel';
- $('#channelSubtitle').textContent='Available channels update with your selected deposit method.';
- const list=methods[state.method].channels.filter(id=>{let c=channels[id];return state.filter==='all'||state.filter==='low'&&c.min<=20||state.filter==='high'&&c.max>=10000});
- $('#channelGrid').innerHTML=list.map(id=>{let c=channels[id],logo=c.logo?`<img src="${c.logo}" alt="${c.name} logo">`:c.mark;return `<button class="channel-card ${state.channel===id?'selected':''} ${c.disabled?'disabled':''}" ${c.disabled?'disabled':''} onclick="selectChannel('${id}')"><span class="check">✓</span><span class="channel-logo ${c.logo?'image-logo':''}">${logo}</span>${c.disabled?'<span class="tag maintenance">Maintenance</span>':''}<div class="channel-name">${c.name}</div><div class="channel-meta"><span>${c.time}</span><span>${money(c.min)}+</span></div></button>`}).join('');
- const showFilters=state.method==='wallet';$('#filterBtn').classList.toggle('hidden',!showFilters);$('#filterRow').classList.toggle('hidden',!showFilters);if(showFilters) $('#filterRow').innerHTML=['all','low','high'].map(x=>`<button class="filter ${state.filter===x?'active':''}" onclick="setFilter('${x}')">${({all:'All',low:'Low minimum',high:'High limit'})[x]}</button>`).join('');
- if(state.method==='online'){
-   const bankSection=`<div id="onlineBankSelection" class="bank-selection"><label class="form-label">Choose a Bank <span class="required">*</span></label><div class="bank-select-wrap"><button type="button" class="bank-select-custom" onclick="toggleBankDropdown()">${state.bank?`<img src="${getBankIcon(state.bank)}" alt="${state.bank}"><span>${state.bank}</span>`:`<span class="bank-placeholder">Select a Bank</span>`}<span class="bank-arrow">▼</span></button><div id="bankDropdown" class="bank-dropdown">${onlineBankOptions.map(bank=>`<button type="button" class="bank-dropdown-item" onclick="chooseOnlineBank('${bank}')"><img src="${getBankIcon(bank)}" alt="${bank}"><span>${bank}</span></button>`).join('')}</div></div></div>`;
-   $('#channelGrid').insertAdjacentHTML('afterend',bankSection);
- } if(state.method==='qr' && (state.channel==='vaderpayc1' || state.channel==='vaderpayc2')){
-   const acceptsSection=`<div class="accepts-payment"><div class="accepts-payment-title">Accepts Payment From</div><div class="accepts-payment-icons">${[
-     ['duitNow','DuitNow'],['boost','Boost'],['grabpay','GrabPay'],['shopee','ShopeePay'],['touchNgo','Touch ’n Go']
-   ].map(([asset,name])=>`<span class="accepts-payment-item"><img src="assets/${asset}.svg" alt="${name}"></span>`).join('')}</div></div>`;
-   $('#channelGrid').insertAdjacentHTML('afterend',acceptsSection);
- }
+document.querySelectorAll('#onlineBankSelection,.bank-selection,.accepts-payment,#cryptoNetworkSelection').forEach(el=>el.remove());
+if(state.method==='bank'){
+$('#channelTitle').textContent='Choose a receiving bank';
+$('#channelSubtitle').textContent='Select the bank account you will transfer funds to.';
+$('#filterBtn').classList.add('hidden');$('#filterRow').classList.add('hidden');
+$('#channelGrid').innerHTML=`<div class="bank-selector"><label class="form-label bank-label">Bank options <span class="required">*</span></label><div class="bank-option-tabs">${bankTransferOptions.map(bank=>`<button class="bank-tile ${state.bank===bank?'selected':''}" onclick="chooseBank('${bank}')"><img src="assets/${bank==='Maybank'?'maybank':'alliance'}.svg" alt="${bank}"><span>${bank}</span></button>`).join('')}</div><p class="bank-helper">Select the bank you will use for this transfer.</p>${bankAccountDetails()}</div>`;
+return;
 }
-
+$('#channelTitle').textContent='Choose a payment channel';
+$('#channelSubtitle').textContent='Available channels update with your selected deposit method.';
+$('#filterBtn').classList.add('hidden');$('#filterRow').classList.add('hidden');
+const list=methods[state.method].channels.filter(id=>{let c=channels[id];return !c.disabled&&(state.filter==='all'||state.filter==='low'&&c.min<=20||state.filter==='high'&&c.max>=10000)});
+$('#channelGrid').innerHTML=list.map(id=>{let c=channels[id],logo=c.logo?`<img src="${c.logo}" alt="${c.name} logo">`:c.mark;return `<button class="channel-card ${state.channel===id?'selected':''}" onclick="selectChannel('${id}')"><span class="check">✓</span><span class="channel-logo ${c.logo?'image-logo':''}">${logo}</span><div class="channel-name">${c.name}</div><div class="channel-meta"><span>${c.time}</span><span>${money(c.min)}+</span></div></button>`}).join('');
+if(state.method==='crypto'){
+const networkSection=`<div id="cryptoNetworkSelection" style="grid-column:1 / -1;width:100%;max-width:100%;margin-top:42px;padding-top:34px;border-top:1px solid #e3e8ef;box-sizing:border-box;overflow:hidden"><div style="font-size:18px;font-weight:600;color:#10243f;margin-bottom:20px">Choose a crypto network</div><div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;width:100%;max-width:100%;box-sizing:border-box">${[['TRC20-USDT','tether.svg','Lower network fee'],['ERC20-USDT','ethereum.svg','Ethereum network']].map(([network,icon,desc])=>`<button type="button" onclick="setCryptoNetwork('${network}')" style="position:relative;min-width:0;width:100%;min-height:150px;padding:24px 22px;border:1px solid ${state.cryptoNetwork===network?'#1677ff':'#d9e2ee'};border-radius:14px;background:${state.cryptoNetwork===network?'#eef6ff':'#fff'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:18px;box-sizing:border-box;box-shadow:${state.cryptoNetwork===network?'0 0 0 1px #1677ff inset':'none'}"><span style="width:58px;height:58px;min-width:58px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f4f6f8"><img src="assets/${icon}" alt="${network}" style="width:58px;height:58px;object-fit:contain"></span><span style="display:flex;flex-direction:column;gap:6px;min-width:0;flex:1;overflow:hidden"><b style="font-size:12px;color:#10243f;white-space:nowrap">${network}</b><small style="font-size:13px;color:#627795;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${desc}</small></span>${state.cryptoNetwork===network?'<span style="position:absolute;right:12px;top:12px;width:22px;height:22px;border-radius:50%;background:#2879e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">✓</span>':''}</button>`).join('')}</div></div>`;
+$('#channelGrid').insertAdjacentHTML('afterend',networkSection);
+return;
+}
+if(state.method==='online'){
+const bankSection=`<div id="onlineBankSelection" class="bank-selection"><label class="form-label">Choose a Bank <span class="required">*</span></label><div class="bank-select-wrap"><button type="button" class="bank-select-custom" onclick="toggleBankDropdown()">${state.bank?`<img src="${getBankIcon(state.bank)}" alt="${state.bank}"><span>${state.bank}</span>`:`<span class="bank-placeholder">Select a Bank</span>`}<span class="bank-arrow">▼</span></button><div id="bankDropdown" class="bank-dropdown">${onlineBankOptions.map(bank=>`<button type="button" class="bank-dropdown-item" onclick="chooseOnlineBank('${bank}')"><img src="${getBankIcon(bank)}" alt="${bank}"><span>${bank}</span></button>`).join('')}</div></div></div>`;
+$('#channelGrid').insertAdjacentHTML('afterend',bankSection);
+}
+if((state.method==='qr'&&(state.channel==='vaderpayc1'||state.channel==='vaderpayc2'))||(state.method==='wallet'&&(state.channel==='vaderpayc1'||state.channel==='eziepay'))){
+const paymentSources=[['duitNow','DuitNow','duitNow'],['boost','Boost','boost'],['grabpay','GrabPay','grabpay'],['shopee','ShopeePay','shopee'],['touchNgo','Touch ’n Go','touchNgo']];
+const acceptsSection=`<div class="accepts-payment"><div class="accepts-payment-title">Accepts Payment From</div><div class="accepts-payment-icons">${paymentSources.map(([asset,name,key])=>`<button type="button" class="accepts-payment-item payment-source-option ${state.walletPayment===key?'selected':''}" onclick="chooseWalletPayment('${key}')"><img src="assets/${asset}.svg" alt="${name}"></button>`).join('')}</div></div>`;
+$('#channelGrid').insertAdjacentHTML('afterend',acceptsSection);
+}
+}
+function getWalletPaymentIcon(key){const icons={duitNow:'assets/duitNow.svg',boost:'assets/boost.svg',grabpay:'assets/grabpay.svg',shopee:'assets/shopee.svg',touchNgo:'assets/touchNgo.svg'};return icons[key]||''}function getWalletPaymentName(key){const names={duitNow:'DuitNow',boost:'Boost',grabpay:'GrabPay',shopee:'ShopeePay',touchNgo:'Touch ’n Go'};return names[key]||''}
 function getBankIcon(bank){
     const icons={
         'Affin Bank':'assets/bank-afffin.svg',
@@ -83,11 +80,22 @@ function getBankIcon(bank){
 
 function toggleBankDropdown(){const dropdown=$('#bankDropdown');if(dropdown) dropdown.classList.toggle('show')}
 
+function chooseWalletPayment(key){state.walletPayment=key;renderChannels();renderSummary();renderForm()}
 function chooseBank(bank){state.bank=bank;renderChannels();renderForm()}
 function chooseOnlineBank(bank){state.bank=bank;renderChannels();renderSummary();renderForm()}
 function bankAccountDetails(){return `<div class="bank-card"><h3>Receiving account for this order</h3><div class="account-line"><span>Receiving bank</span><b>${state.bank}</b></div>${[['Bank account name',bankAccount.name],['Bank account number',bankAccount.number]].map(x=>`<div class="fixed-account-field"><span>${x[0]}</span><div><b>${x[1]}</b><button class="copy-icon" title="Copy ${x[0]}" aria-label="Copy ${x[0]}" onclick="copyText('${x[1]}')"><img src="assets/copy-icon.svg" alt=""></button></div></div>`).join('')}</div>`}
 function setCryptoNetwork(network){state.cryptoNetwork=network;renderChannels();renderSummary();renderForm()}
-function renderSummary(){if(state.method==='bank'){$('#providerSummary').classList.add('hidden');return;}let c=channels[state.channel], logo=c.logo ? `<img src="${c.logo}" alt="${c.name}logo">` : c.mark;let network=state.method==='crypto' ? `<span class="summary-pill">Network<strong>${state.cryptoNetwork}</strong></span>` : '';$('#providerSummary').classList.remove('hidden');$('#providerSummary').innerHTML=` <div class="large-logo ${c.logo?'image-logo':''}"> ${logo}</div> <div><h2>${c.name}</h2>${state.method==='online'&&state.bank?`<p class="provider-method"><img src="${getBankIcon(state.bank)}" alt="${state.bank}" class="summary-bank-icon"><span>${state.bank}</span></p>`:state.channel==='vaderpayc1'||state.channel==='vaderpayc2'?`<p class="provider-method"><img src="assets/duitNow.svg" alt="DuitNow" class="duitnow-summary-icon"><span>DuitNow QR · Instant</span></p>`:''}</div> `;}
+function renderSummary(){
+if(state.method==='bank'){$('#providerSummary').classList.add('hidden');return}
+let c=channels[state.channel],logo=c.logo?`<img src="${c.logo}" alt="${c.name}logo">`:c.mark;
+$('#providerSummary').classList.remove('hidden');
+let methodLine='';
+if(state.method==='online'&&state.bank)methodLine=`<p class="provider-method"><img src="${getBankIcon(state.bank)}" alt="${state.bank}" class="summary-bank-icon"><span>${state.bank}</span></p>`;
+else if((state.method==='wallet'||state.method==='qr')&&(state.channel==='vaderpayc1'||state.channel==='vaderpayc2'||state.channel==='eziepay'))methodLine=`<p class="provider-method"><img src="${getWalletPaymentIcon(state.walletPayment)}" alt="${getWalletPaymentName(state.walletPayment)}" class="duitnow-summary-icon"><span>${getWalletPaymentName(state.walletPayment)}</span></p>`;
+else if(state.method==='crypto')methodLine=`<p class="provider-method"><img src="assets/${state.cryptoNetwork==='TRC20-USDT'?'tether.svg':'ethereum.svg'}" alt="${state.cryptoNetwork}" class="crypto-summary-icon"><span>${state.cryptoNetwork}</span></p>`;
+else if(state.channel==='vaderpayc1'||state.channel==='vaderpayc2')methodLine=`<p class="provider-method"><img src="assets/duitNow.svg" alt="DuitNow" class="duitnow-summary-icon"><span>DuitNow QR · Instant</span></p>`;
+$('#providerSummary').innerHTML=`<div class="large-logo ${c.logo?'image-logo':''}">${logo}</div><div><h2>${c.name}</h2>${methodLine}</div>`;
+}
 function field(label,content){return `<label class="form-label">${label}</label>${content}`}
 function amountBlock(c){return `${field(`Deposit amount <span class="required">*</span>`,`<div class="amount-wrap"><span class="currency">MYR</span><input id="amount" inputmode="decimal" placeholder="Enter deposit amount" value="${state.amount}" oninput="setAmount(this.value)"></div><div id="amountHelp" class="input-help">Per transaction: ${money(c.min)} – ${money(c.max)}</div>`)}<div class="quick-amounts">${[20,50,100,200,500].map(v=>`<button onclick="quickAmount(${v})">MYR ${v}</button>`).join('')}</div>`}
 function renderForm(){let c=channels[state.channel], specific='';
@@ -96,8 +104,8 @@ function renderForm(){let c=channels[state.channel], specific='';
  else {let warning=state.channel==='eziepay'?`<div class="notice"><b>!</b><span>This channel has a ${money(500)} maximum per transaction. Choose another channel for a higher amount.</span></div>`:'';specific=`${warning}${amountBlock(c)}`}
  const label=state.channel==='banktransfer'?'Submit transfer request':state.channel==='usdt'?'Continue':state.method==='qr'?'Generate payment QR code':`Continue with ${c.name}`;
  $('#dynamicForm').innerHTML=`${specific}<button id="submitBtn" class="primary-button" onclick="submitDeposit()">${label}</button><div class="security-copy">▣ <span>Your payment details are encrypted. Never share your order details with anyone.</span></div>`;validate(); }
-function setMethod(id){state.method=id;state.filter='all';let first=methods[id].channels.find(x=>!channels[x].disabled);state.channel=first;state.amount='';if(id!=='online')state.bank='';render()}
-function selectChannel(id){if(channels[id].disabled){showToast('This channel is under maintenance. Please choose another method.');return}state.channel=id;state.amount='';if(state.method==='online')state.bank='';render()}
+function setMethod(id){state.method=id;state.filter='all';let first=methods[id].channels.find(x=>!channels[x].disabled);state.channel=first;state.amount='';if(id!=='online')state.bank='';state.walletPayment='duitNow';render()}
+function selectChannel(id){if(channels[id].disabled){showToast('This channel is under maintenance. Please choose another method.');return}state.channel=id;state.amount='';if(state.method==='online')state.bank='';if(state.method==='wallet'||state.method==='qr')state.walletPayment='duitNow';render()}
 function setFilter(v){state.filter=v;renderChannels()}
 function setAmount(v){state.amount=v;validate();if(state.channel==='usdt')$('#usdtEstimate').textContent=`~ ${(Number(v||0)*.2477).toFixed(4)} ${state.cryptoNetwork}`}
 function quickAmount(v){state.amount=v;let a=$('#amount');if(a)a.value=v;validate();if(state.channel==='usdt')$('#usdtEstimate').textContent=`~ ${(v*.2477).toFixed(4)} ${state.cryptoNetwork}`}
@@ -107,4 +115,4 @@ function openModal(){let c=channels[state.channel], isCrypto=state.channel==='us
 function closeModal(){$('#modalBackdrop').classList.add('hidden')}
 function copyText(t){navigator.clipboard?.writeText(t);showToast('Account details copied')}
 function showToast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
-$('#filterBtn').onclick=()=>$('#filterRow').classList.toggle('hidden');$('#modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};render();
+$('#modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};render();
