@@ -153,4 +153,19 @@ function closeModal(){$('#modalBackdrop').classList.add('hidden')}
 function copyText(t){navigator.clipboard?.writeText(t);showToast('Account details copied')}
 function showToast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
 const cryptoSummaryStyle=document.createElement('style');cryptoSummaryStyle.textContent='.crypto-summary-icon{width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:8px}';document.head.appendChild(cryptoSummaryStyle);
-$('#modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};render();
+$('#modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};
+function initDepositHelp(){
+if(document.getElementById('depositHelp'))return;
+const headings=[...document.querySelectorAll('h1,h2,h3')].filter(el=>el.textContent.trim()==='Deposit');
+const title=headings[0];
+if(!title)return;
+const wrap=document.createElement('span');wrap.className='deposit-title-with-help';
+const icon=document.createElement('span');icon.id='depositHelp';icon.className='deposit-help';icon.setAttribute('aria-label','Need for Help?');icon.innerHTML=`<img src="assets/help.svg" alt="Help"><span>Need for Help?</span>`;
+title.parentNode.insertBefore(wrap,title);
+wrap.appendChild(title);wrap.appendChild(icon);
+}
+const depositHelpStyle=document.createElement('style');depositHelpStyle.textContent=`.deposit-title-with-help{display:inline-flex;align-items:center;gap:9px}.deposit-title-with-help h1,.deposit-title-with-help h2,.deposit-title-with-help h3{margin-right:0}.deposit-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:help;vertical-align:middle}.deposit-help img{width:22px;height:22px;display:block;cursor: pointer;}.deposit-help>span{position:absolute;left:32px;top:50%;transform:translateY(-50%);background:#10243f;color:#fff;padding:7px 11px;border-radius:6px;font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease;z-index:1000}.deposit-help:hover>span{opacity:1;visibility:visible}`;
+document.head.appendChild(depositHelpStyle);
+
+initDepositHelp();
+render();
