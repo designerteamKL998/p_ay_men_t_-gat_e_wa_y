@@ -1061,3 +1061,243 @@ button {
 .category-tab.active:nth-child(3) .category-tab-icon{
     filter:brightness(0) invert(1);
 }
+/* E-Wallet: 4 payment channels per page with left/right paging */
+.ewallet-channel-page{
+    width:100%;
+    display:flex;
+    align-items:stretch;
+    gap:8px;
+}
+.ewallet-channel-page-grid{
+    flex:1;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+}
+.ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+}
+.ewallet-page-arrow{
+    width:34px;
+    min-width:34px;
+    border:1px solid #b7d6ff;
+    border-radius:8px;
+    background:#e7f1fd;
+    color:#1a4687;
+    font-size:25px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.ewallet-page-arrow:hover:not(:disabled){
+    background:#d4e7fb;
+}
+.ewallet-page-arrow:disabled{
+    opacity:.35;
+    cursor:default;
+}
+@media(max-width:900px){
+    .ewallet-channel-page-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+/* E-Wallet: 2 x 2 channel cards with dot pagination */
+.ewallet-channel-page{
+    width:100%;
+}
+.ewallet-channel-page-grid{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+.ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+}
+.ewallet-page-dots{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin-top:14px;
+}
+.ewallet-page-dot{
+    width:10px;
+    height:10px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:#cbd6e4;
+    cursor:pointer;
+}
+.ewallet-page-dot.active{
+    background:#2f73dc;
+    transform:scale(1.1);
+}
+@media(max-width:560px){
+    .ewallet-channel-page-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+/* FINAL: E-Wallet cards use the exact same card sizing as other channels */
+#channelGrid .ewallet-channel-page-grid .channel-card{
+    min-height:108px;
+    height:108px;
+    padding:14px;
+    box-sizing:border-box;
+}
+#channelGrid .ewallet-channel-page-grid .channel-card.selected{
+    min-height:108px;
+    height:108px;
+    padding:13px;
+}
+#channelGrid .ewallet-channel-page-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+}
+#channelGrid .ewallet-channel-page{
+    width:100%;
+}
+#channelGrid .ewallet-page-dots{
+    margin-top:12px;
+    padding:0;
+}
+
+/* FIX: E-Wallet pagination must span the full channel-grid width */
+#channelGrid .ewallet-channel-page{
+    grid-column:1 / -1;
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-channel-page-grid{
+    width:100%;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:108px;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-page-dots{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin-top:12px;
+    box-sizing:border-box;
+}
+
+/* FINAL CLEAN E-WALLET LAYOUT
+   Use the same .channel-card dimensions as every other flow.
+   Only the grid changes to 2 x 2 and page dots span both columns. */
+#channelGrid.ewallet-paged{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    align-items:start;
+}
+
+#channelGrid.ewallet-paged > .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:108px;
+    box-sizing:border-box;
+    margin:0;
+}
+
+#channelGrid.ewallet-paged > .channel-card.selected{
+    min-height:108px;
+    height:108px;
+    padding:13px;
+    box-sizing:border-box;
+}
+
+#channelGrid.ewallet-paged > .ewallet-page-dots{
+    grid-column:1 / -1;
+    width:100%;
+    height:16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin:1px 0 0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+#channelGrid.ewallet-paged .ewallet-page-dot{
+    width:9px;
+    height:9px;
+    min-width:9px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:#cbd6e4;
+    box-shadow:none;
+    cursor:pointer;
+}
+
+#channelGrid.ewallet-paged .ewallet-page-dot.active{
+    background:#2f73dc;
+    transform:scale(1.15);
+}
+
+@media(max-width:560px){
+    #channelGrid.ewallet-paged{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+/* E-Wallet card sizing: use the exact same sizing as normal .channel-card */
+#channelGrid.ewallet-paged > .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:auto;
+    padding:14px;
+    box-sizing:border-box;
+    margin:0;
+    align-self:stretch;
+}
+
+#channelGrid.ewallet-paged > .channel-card.selected{
+    min-height:108px;
+    height:auto;
+    padding:13px;
+    box-sizing:border-box;
+}
+
+/* E-Wallet desktop drag / mobile swipe */
+#channelGrid.ewallet-paged{
+    touch-action:pan-y;
+    user-select:none;
+    cursor:grab;
+}
+#channelGrid.ewallet-paged:active{
+    cursor:grabbing;
+}
+#channelGrid.ewallet-paged .channel-card{
+    -webkit-user-drag:none;
+}
