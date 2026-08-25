@@ -2,7 +2,7 @@ const methods = {
   online:{label:'Online Transfer', channels:['vaderpay','help2pay','payessence']},
   qr:{label:'DuitNow QR', channels:['vaderpayc1','vaderpayc2','eziepayqr']},
   bank:{label:'Bank In Transfer', channels:['banktransfer']},
-  wallet:{label:'E-Wallet', channels:['vaderpayc1','a9wallet','payessence','payjom','bigpayz','eziepay']},
+  wallet:{label:'E-Wallet', channels:['vaderpayc1','a9wallet','payessence','payjom','bigpayz','eziepay','paymentA','paymentB','paymentC','paymentD','paymentE','paymentF']},
   crypto:{label:'Crypto', channels:['usdt']}
 };
 const channels = {
@@ -18,15 +18,23 @@ const channels = {
   eziepay:{name:'EeziePay',mark:'EZ',logo:'assets/eeziepay.svg',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
   eziepayqr:{name:'EeziePay',mark:'EZ',logo:'assets/eeziepay.svg',type:'DuitNow QR',time:'Instant',min:40,max:500,fee:'Free'},
   banktransfer:{name:'Local Bank Transfer',mark:'BT',type:'Bank Transfer',time:'Review in 5–15 mins',min:20,max:30000,fee:'Free'},
-  usdt:{name:'VaderPay (C2)',mark:'VP',logo:'assets/vaderpay.png',type:'Crypto',time:'After on-chain confirmation',min:5,max:50000,fee:'Network fee'}
+  usdt:{name:'VaderPay (C2)',mark:'VP',logo:'assets/vaderpay.png',type:'Crypto',time:'After on-chain confirmation',min:5,max:50000,fee:'Network fee'},
+  paymentA:{name:'PaymentA',mark:'A',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
+  paymentB:{name:'PaymentB',mark:'B',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
+  paymentC:{name:'PaymentA',mark:'A',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
+  paymentD:{name:'PaymentB',mark:'B',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
+  paymentE:{name:'PaymentA',mark:'A',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'},
+  paymentF:{name:'PaymentB',mark:'B',type:'E-Wallet',time:'Instant',min:40,max:500,fee:'Free'}
 };
 const onlineBankOptions = ['Affin Bank','AmBank','Bank Simpanan Nasional','Hong Leong Bank','Maybank','Public Bank Berhad','RHB Bank','CIMB Bank','Bank Islam','Bank Rakyat','Alliance Bank','OCBC Bank','UOB Bank'];
 const bankTransferOptions = ['Maybank','Alliance'];
 const bankAccount = { name:'JH AUTO MOBILE', number:'560102718204' };
+let ewalletChannelPage=0;
+const EWALLET_CHANNELS_PER_PAGE=4;
 let state={method:'online',channel:'vaderpay',filter:'all',amount:'',bank:'',cryptoNetwork:'TRC20-USDT',walletPayment:'duitNow'};
 const $=s=>document.querySelector(s);
 function money(n){return `MYR ${Number(n).toLocaleString('en-MY')}`}
-function render(){renderTabs();renderChannels();renderSummary();renderForm()}
+function render(){renderTabs();renderChannels();bindEwalletDrag();renderSummary();renderForm()}
 function renderTabs(){const methodIcons={online:'assets/onlinetransfer.svg',qr:'assets/duitNow.svg',bank:'assets/bankIn.svg',wallet:'assets/touchNgo.svg',crypto:'assets/tether.svg'};$('#categoryTabs').innerHTML=Object.entries(methods).map(([id,m])=>`<button class="category-tab ${state.method===id?'active':''}" onclick="setMethod('${id}')"><img src="${methodIcons[id]}" class="category-tab-icon" alt=""><span>${m.label}</span></button>`).join('')}
 function renderChannels(){
 document.querySelectorAll('#onlineBankSelection,.bank-selection,.accepts-payment,#cryptoNetworkSelection').forEach(el=>el.remove());
@@ -41,7 +49,21 @@ $('#channelTitle').textContent='Choose a payment channel';
 $('#channelSubtitle').textContent='Available channels update with your selected deposit method.';
 $('#filterBtn').classList.add('hidden');$('#filterRow').classList.add('hidden');
 const list=methods[state.method].channels.filter(id=>{let c=channels[id];return !c.disabled&&(state.filter==='all'||state.filter==='low'&&c.min<=20||state.filter==='high'&&c.max>=10000)});
+
+if(state.method==='wallet'){
+const totalPages=Math.max(1,Math.ceil(list.length/EWALLET_CHANNELS_PER_PAGE));
+if(ewalletChannelPage>=totalPages)ewalletChannelPage=totalPages-1;
+if(ewalletChannelPage<0)ewalletChannelPage=0;
+const startIndex=ewalletChannelPage*EWALLET_CHANNELS_PER_PAGE;
+const pageList=list.slice(startIndex,startIndex+EWALLET_CHANNELS_PER_PAGE);
+const cards=pageList.map(id=>{let c=channels[id],logo=c.logo?`<img src="${c.logo}" alt="${c.name} logo">`:c.mark;return `<button class="channel-card ${state.channel===id?'selected':''}" onclick="selectChannel('${id}')"><span class="check">✓</span><span class="channel-logo ${c.logo?'image-logo':''}">${logo}</span><div class="channel-name">${c.name}</div><div class="channel-meta"><span>${c.time}</span><span>${money(c.min)}+</span></div></button>`}).join('');
+const dots=Array.from({length:totalPages},(_,p)=>`<button type="button" class="ewallet-page-dot ${p===ewalletChannelPage?'active':''}" aria-label="Page ${p+1}" onclick="goEwalletChannelPage(${p})"></button>`).join('');
+$('#channelGrid').classList.add('ewallet-paged');
+$('#channelGrid').innerHTML=cards+`<div class="ewallet-page-dots">${dots}</div>`;
+}else{
+$('#channelGrid').classList.remove('ewallet-paged');
 $('#channelGrid').innerHTML=list.map(id=>{let c=channels[id],logo=c.logo?`<img src="${c.logo}" alt="${c.name} logo">`:c.mark;return `<button class="channel-card ${state.channel===id?'selected':''}" onclick="selectChannel('${id}')"><span class="check">✓</span><span class="channel-logo ${c.logo?'image-logo':''}">${logo}</span><div class="channel-name">${c.name}</div><div class="channel-meta"><span>${c.time}</span><span>${money(c.min)}+</span></div></button>`}).join('');
+}
 if(state.method==='crypto'){
 const networkSection=`<div id="cryptoNetworkSelection" style="grid-column:1 / -1;width:100%;max-width:100%;margin-top:42px;padding-top:34px;border-top:1px solid #e3e8ef;box-sizing:border-box;overflow:hidden"><div style="font-size:18px;font-weight:600;color:#10243f;margin-bottom:20px">Choose a crypto network</div><div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;width:100%;max-width:100%;box-sizing:border-box">${[['TRC20-USDT','tether.svg','Lower network fee'],['ERC20-USDT','ethereum.svg','Ethereum network']].map(([network,icon,desc])=>`<button type="button" onclick="setCryptoNetwork('${network}')" style="position:relative;min-width:0;width:100%;min-height:150px;padding:24px 22px;border:1px solid ${state.cryptoNetwork===network?'#1677ff':'#d9e2ee'};border-radius:14px;background:${state.cryptoNetwork===network?'#eef6ff':'#fff'};cursor:pointer;text-align:left;display:flex;align-items:center;gap:18px;box-sizing:border-box;box-shadow:${state.cryptoNetwork===network?'0 0 0 1px #1677ff inset':'none'}"><span style="width:58px;height:58px;min-width:58px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f4f6f8"><img src="assets/${icon}" alt="${network}" style="width:58px;height:58px;object-fit:contain"></span><span style="display:flex;flex-direction:column;gap:6px;min-width:0;flex:1;overflow:hidden"><b style="font-size:11px;color:#10243f;white-space:nowrap">${network}</b><small style="font-size:11px;color:#627795;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${desc}</small></span>${state.cryptoNetwork===network?'<span style="position:absolute;right:12px;top:12px;width:22px;height:22px;border-radius:50%;background:#2879e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">✓</span>':''}</button>`).join('')}</div></div>`;
 $('#channelGrid').insertAdjacentHTML('afterend',networkSection);
@@ -82,6 +104,47 @@ function toggleBankDropdown(){const dropdown=$('#bankDropdown');if(dropdown) dro
 
 function chooseWalletPayment(key){state.walletPayment=key;renderChannels();renderSummary();renderForm()}
 function chooseBank(bank){state.bank=bank;renderChannels();renderForm()}
+let ewalletDragStartX=null;
+let ewalletDragStartY=null;
+let ewalletDragging=false;
+function goEwalletChannelPage(page){
+ewalletChannelPage=page;
+renderChannels();
+}
+
+function bindEwalletDrag(){
+const grid=$('#channelGrid');
+if(!grid||grid.dataset.dragBound==='1')return;
+grid.dataset.dragBound='1';
+grid.addEventListener('pointerdown',e=>{
+if(state.method!=='wallet')return;
+ewalletDragStartX=e.clientX;
+ewalletDragStartY=e.clientY;
+ewalletDragging=true;
+grid.setPointerCapture?.(e.pointerId);
+});
+grid.addEventListener('pointerup',e=>{
+if(!ewalletDragging||ewalletDragStartX===null)return;
+const dx=e.clientX-ewalletDragStartX;
+const dy=e.clientY-ewalletDragStartY;
+ewalletDragging=false;
+ewalletDragStartX=null;
+ewalletDragStartY=null;
+if(Math.abs(dx)<45||Math.abs(dx)<Math.abs(dy)*1.15)return;
+const list=methods.wallet.channels.filter(id=>{
+const c=channels[id];
+return !c.disabled&&(state.filter==='all'||state.filter==='low'&&c.min<=20||state.filter==='high'&&c.max>=10000);
+});
+const totalPages=Math.max(1,Math.ceil(list.length/EWALLET_CHANNELS_PER_PAGE));
+const nextPage=dx<0?ewalletChannelPage+1:ewalletChannelPage-1;
+if(nextPage>=0&&nextPage<totalPages)goEwalletChannelPage(nextPage);
+});
+grid.addEventListener('pointercancel',()=>{
+ewalletDragging=false;
+ewalletDragStartX=null;
+ewalletDragStartY=null;
+});
+}
 function chooseOnlineBank(bank){state.bank=bank;renderChannels();renderSummary();renderForm()}
 function bankAccountDetails(){return `<div class="bank-card"><h3>Receiving account for this order</h3><div class="account-line"><span>Receiving bank</span><b>${state.bank}</b></div>${[['Bank account name',bankAccount.name],['Bank account number',bankAccount.number]].map(x=>`<div class="fixed-account-field"><span>${x[0]}</span><div><b>${x[1]}</b><button class="copy-icon" title="Copy ${x[0]}" aria-label="Copy ${x[0]}" onclick="copyText('${x[1]}')"><img src="assets/copy-icon.svg" alt=""></button></div></div>`).join('')}</div>`}
 function setCryptoNetwork(network){state.cryptoNetwork=network;renderChannels();renderSummary();renderForm()}
@@ -105,7 +168,7 @@ function renderForm(){let c=channels[state.channel], specific='';
  const label=state.channel==='banktransfer'?'Submit transfer request':state.channel==='usdt'?'Continue':state.method==='qr'?'Generate payment QR code':`Continue with ${c.name}`;
  $('#dynamicForm').innerHTML=`${specific}<button id="submitBtn" class="primary-button" onclick="submitDeposit()">${label}</button><div class="security-copy"><img src="assets/secure.svg" alt="Security"><span>Your payment details are encrypted. Never share your order details with anyone.</span></div>`;validate(); }
 const securityCopyStyle=document.createElement('style');securityCopyStyle.textContent='.security-copy{display:flex;align-items:center;gap:8px}.security-copy img{width:16px;height:16px;object-fit:contain;flex-shrink:0}';document.head.appendChild(securityCopyStyle);
-function setMethod(id){state.method=id;state.filter='all';let first=methods[id].channels.find(x=>!channels[x].disabled);state.channel=first;state.amount='';if(id!=='online')state.bank='';state.walletPayment='duitNow';render()}
+function setMethod(id){state.method=id;state.filter='all';if(id==='wallet')ewalletChannelPage=0;let first=methods[id].channels.find(x=>!channels[x].disabled);state.channel=first;state.amount='';if(id!=='online')state.bank='';state.walletPayment='duitNow';render()}
 function selectChannel(id){if(channels[id].disabled){showToast('This channel is under maintenance. Please choose another method.');return}state.channel=id;state.amount='';if(state.method==='online')state.bank='';if(state.method==='wallet'||state.method==='qr')state.walletPayment='duitNow';render()}
 function setFilter(v){state.filter=v;renderChannels()}
 function setAmount(v){state.amount=v;validate();if(state.channel==='usdt')$('#usdtEstimate').textContent=`~ ${(Number(v||0)*.2477).toFixed(4)} ${state.cryptoNetwork}`}
