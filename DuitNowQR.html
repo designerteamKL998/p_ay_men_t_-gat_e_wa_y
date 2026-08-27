@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuitNow QR Payment Process</title>
+    <link rel="stylesheet" href="payment-gateway.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Security Header -->
+        <div class="header-bar">
+            <div class="header-left">
+                <div class="logo-icon vader-icon"><img src="assets/vaderpay.png" /></div>
+                <span class="merchant-logo">VADERPAY</span>
+                <span class="security-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0110 0v4"></path>
+                    </svg>
+                    Secure Payment
+                </span>
+            </div>
+            <div class="header-right">
+                <button class="btn-text-action" aria-label="Change Language">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8" />
+                    </svg>
+                    <span>EN</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 0B: DuitNow QR Scan & Pay -->
+        <div id="page-0b" class="page active">
+            <!-- Transaction Summary Header -->
+            <div class="summary-banner">
+                <div class="summary-item">
+                    <div class="label">Merchant / Purpose</div>
+                    <div class="value">TopUp</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Order Reference</div>
+                    <div class="value">74255 <button class="copy-btn" onclick="alert('Copied to clipboard')"><img src="assets/copy-icon.svg" /></button></div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Amount</div>
+                    <div class="value amount-highlight">RM 10.00</div>
+                </div>
+            </div>
+
+            <div class="layout-two-col">
+                <!-- Left Column: Instructions & Security Check -->
+                <div class="left-col">
+                    <h2 class="page-title">Pay with DuitNow QR</h2>
+                    <p class="page-subtitle">Scan the QR code below using your bank or e-Wallet app to complete the payment.</p>
+
+                    <ol class="steps-list">
+                        <li>Open your bank or e-Wallet app.</li>
+                        <li>Select <strong>"Scan QR / Scan & Pay"</strong>.</li>
+                        <li>Scan this QR code and verify the merchant and <strong>RM 10.00</strong> amount.</li>
+                        <li>Confirm and complete payment inside your app.</li>
+                    </ol>
+
+                    <div class="security-box">
+                        <h5>Check Before Payment</h5>
+                        <p>• Ensure your app displays the merchant as <strong>TopUp</strong> and the amount as <strong>RM 10.00</strong>.</p>
+                        <p>• If details do not match, cancel payment immediately.</p>
+                        <p>• Never share payment screenshots, passwords, TAC, or OTP with anyone.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: QR Code & Controls -->
+                <div class="right-col">
+                    <div class="qr-card-container">
+                        <div class="label" style="margin-bottom: 8px;">QR code expires in <span id="timer" style="color:var(--primary-red); font-weight:600;">04:47</span></div>
+
+                        <div class="qr-wrapper" id="qrWrapper">
+                            <div class="qr-code"><img src="assets/QRcode.jpg" /></div>
+                            <div class="qr-expired-overlay">
+                                <span>QR Code Expired</span>
+                            </div>
+                        </div>
+
+                        <div class="duitnow-logo-text">DuitNow QR</div>
+                        <div class="notice-text">Pay exactly RM 10.00 — Do not alter amount</div>
+
+                        <div class="qr-actions">
+                            <button class="btn-secondary" onclick="refreshQR()">Refresh QR</button>
+                            <button class="btn-secondary" onclick="alert('QR Code saved to gallery')">Save QR Code</button>
+                        </div>
+
+                        <button class="btn-primary" id="mainSubmitBtn" onclick="submitPayment()">I Have Completed Payment</button>
+
+                        <div class="polling-status">
+                            <div class="spinner"></div>
+                            <span>Waiting for payment completion...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 0C: Pending Confirmation / Receipt -->
+        <div id="page-0c" class="page">
+            <div class="success-container">
+
+                <div class="success-motion-wrapper">
+                    <div class="ripple-ring"></div>
+                    <div class="ripple-ring"></div>
+
+                    <div class="success-circle">
+                        <svg class="checkmark-svg" viewBox="0 0 52 52">
+                            <path d="M14 27 l10 10 l20 -20" />
+                        </svg>
+                    </div>
+
+                    <div class="confetti-container">
+                        <div class="confetti" style="--tw-x: -30px; --tw-y: -30px;"></div>
+                        <div class="confetti" style="--tw-x: 35px; --tw-y: -25px;"></div>
+                        <div class="confetti" style="--tw-x: -35px; --tw-y: 20px;"></div>
+                        <div class="confetti" style="--tw-x: 30px; --tw-y: 30px;"></div>
+                        <div class="confetti" style="--tw-x: 0px; --tw-y: -40px;"></div>
+                        <div class="confetti" style="--tw-x: 5px; --tw-y: 40px;"></div>
+                    </div>
+                </div>
+                <h2 class="page-title">Your Payment was successful</h2>
+                <p class="page-subtitle" style="max-width: 480px; margin: 8px auto 0;">We have received your payment request and are verifying it with the payment channel. Please do not submit duplicate payments.</p>
+
+                <div style="color: var(--warning-amber); font-size: 13px; margin-top: 8px;">
+                    Confirmation usually takes a few minutes, up to 10 minutes maximum.
+                </div>
+
+                <div class="receipt-card">
+                    <div class="receipt-row">
+                        <span style="color: var(--text-sub);">Amount</span>
+                        <span style="font-weight: 600;">RM 10.00</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span style="color: var(--text-sub);">Payment Method</span>
+                        <span>DuitNow QR</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span style="color: var(--text-sub);">Order Reference</span>
+                        <span>74255</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span style="color: var(--text-sub);">Submission Time</span>
+                        <span>2026-08-26 12:21</span>
+                    </div>
+                </div>
+
+                <div style="max-width: 320px; margin: 0 auto;">
+                    <button class="btn-primary" onclick="redirectToMerchant()">Redirect to merchant</button>
+                    <div id="redirectTimer" style="font-size: 13px; color: var(--text-sub); margin-top: 8px; font-weight: 500;">
+                        Redirecting to merchant site in <span id="redirectCountdown" style="color: var(--primary-red); font-weight: 600;">02:00</span>
+                        <button class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="switchPage('page-0b')">Back to QR Payment</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; font-size: 13px; color: var(--text-sub);">
+                    <a href="#" style="color: var(--text-sub); margin: 0 8px;">Charged but not received?</a> |
+                    <a href="#" style="color: var(--text-sub); margin: 0 8px;">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page switching logic
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Timer countdown logic
+        let timeLeft = 287; // 4 minutes 47 seconds
+        const timerElem = document.getElementById('timer');
+        const qrWrapper = document.getElementById('qrWrapper');
+        const mainSubmitBtn = document.getElementById('mainSubmitBtn');
+
+        const countdown = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElem.innerText = "00:00";
+                qrWrapper.classList.add('expired');
+                mainSubmitBtn.innerText = "Generate New QR Code";
+                mainSubmitBtn.onclick = refreshQR;
+            } else {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerElem.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timeLeft--;
+            }
+        }, 1000);
+
+        // Refresh QR logic
+        function refreshQR() {
+            if (confirm("Refreshing will invalidate the previous QR code. Are you sure you want to generate a new one?")) {
+                qrWrapper.classList.remove('expired');
+                timeLeft = 300;
+                mainSubmitBtn.innerText = "I Have Completed Payment";
+                mainSubmitBtn.onclick = submitPayment;
+                alert("QR Code has been refreshed");
+            }
+        }
+
+        // Manual status check click
+        function submitPayment() {
+            switchPage('page-0c');
+        }
+
+        // Function to handle merchant redirect action
+        function redirectToMerchant() {
+            alert("Redirecting to merchant site...");
+            window.location.href = "https://designerteamkl998.github.io/p_ay_men_t_-gat_e_wa_y/";
+            return true;
+        }
+
+        let redirectInterval;
+
+        // Start the 2-minute countdown timer when page-0c loads
+        function startRedirectTimer() {
+            let redirectTimeLeft = 120; // 2 minutes in seconds
+            const countdownElem = document.getElementById('redirectCountdown');
+
+            // Reset display on start
+            countdownElem.innerText = "02:00";
+            clearInterval(redirectInterval);
+
+            redirectInterval = setInterval(() => {
+                if (redirectTimeLeft <= 0) {
+                    clearInterval(redirectInterval);
+                    countdownElem.innerText = "00:00";
+                    redirectToMerchant();
+                } else {
+                    let minutes = Math.floor(redirectTimeLeft / 60);
+                    let seconds = redirectTimeLeft % 60;
+                    countdownElem.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    redirectTimeLeft--;
+                }
+            }, 1000);
+        }
+
+        // Update your existing submitPayment function to start the countdown on switch
+        function submitPayment() {
+            switchPage('page-0c');
+            startRedirectTimer();
+        }
+    </script>
+</body>
+</html>
