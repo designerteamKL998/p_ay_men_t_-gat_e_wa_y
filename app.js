@@ -160,7 +160,9 @@ else if(state.channel==='vaderpayc1'||state.channel==='vaderpayc2')methodLine=`<
 $('#providerSummary').innerHTML=`<div class="large-logo ${c.logo?'image-logo':''}">${logo}</div><div><h2>${c.name}</h2>${methodLine}</div>`;
 }
 function field(label,content){return `<label class="form-label">${label}</label>${content}`}
+
 function amountBlock(c){return `${field(`Deposit amount <span class="required">*</span>`,`<div class="amount-wrap"><span class="currency">MYR</span><input id="amount" inputmode="decimal" placeholder="Enter deposit amount" value="${state.amount}" oninput="setAmount(this.value)"></div><div id="amountHelp" class="input-help">Per transaction: ${money(c.min)} – ${money(c.max)}</div>`)}<div class="quick-amounts">${[20,50,100,200,500].map(v=>`<button onclick="quickAmount(${v})">MYR ${v}</button>`).join('')}</div>`}
+
 function renderForm(){let c=channels[state.channel], specific='';
  if(state.channel==='banktransfer') specific=`${amountBlock(c)}<div class="form-row"><div>${field('Transfer Type <span class="required">*</span>',`<select class="form-control"><option>Internet Banking</option><option>ATM</option><option>CDM</option><option>SMS Banking</option></select>`)}</div><div>${field('Sender account name',`<input class="form-control" placeholder="Enter sender account name">`)}</div></div>${field('Transfer receipt (optional)',`<div class="upload-box">A receipt may help us process your request faster.<br>JPG, PNG, or PDF · maximum 10MB<br><label>Select file<input type="file" onchange="showToast('Transfer receipt selected')"></label></div>`)}<div class="notice" style="margin-top:18px"><b>!</b><span>Please pay only to the account shown on this order. Do not transfer to previous or other accounts.</span></div>`;
  else if(state.channel==='usdt') specific=`<div class="crypto-selection"><span>Asset</span><b>USDT</b><span>Network</span><b>${state.cryptoNetwork}</b></div><div class="notice"><b>!</b><span>Crypto quotes may change with the market. This quote refreshes in 05:00.</span></div>${amountBlock(c)}<div class="crypto-info"><div>Currency conversion <strong id="usdtEstimate">~ 0.0000 ${state.cryptoNetwork}</strong></div><div>Current rate <strong>1 MYR ≈ 0.2477 ${state.cryptoNetwork}</strong></div><div>Minimum deposit <strong>${money(c.min)}</strong></div><div>Quote valid for <strong>05:00</strong></div></div>`;
@@ -198,9 +200,22 @@ if(state.method==='online'&&!state.bank){
 showDepositReminder('Choose a bank','Please select a bank before continuing.','Choose a bank to receive the payment instruction.','', 'Choose Bank');
 return
 }
+
+/* Online Transfer -> Bank_transfer.html State 1
+   Pass the selected bank and deposit amount through the URL.
+   Bank_transfer.html reads these values on load and opens State 1. */
+if(state.method==='online'){
+  // Save the selection as a fallback, then open Bank_transfer.html directly in State 1.
+  const bank = String(state.bank || '').trim();
+  const amount = String(state.amount || '').trim();
+  if(!bank || !amount) return;
+  sessionStorage.setItem('bankTransferFlow', JSON.stringify({ bank, amount }));
+  window.location.assign('Bank_transfer.html?state=1&bank=' + encodeURIComponent(bank) + '&amount=' + encodeURIComponent(amount));
+  return;
+}
 if((state.method==='qr'||state.method==='wallet')&&(state.channel==='vaderpayc1'||state.channel==='vaderpayc2'||state.channel==='eziepay')){
-const name=getWalletPaymentName(state.walletPayment)||'a payment method';
-showDepositReminder('Check your payment method','Please make sure you have selected your preferred payment method before continuing.',name,'');
+const name=getWalletPaymentName(state.walletPayment)||'DuitNow';
+showDepositReminder('Check your payment method','Please make sure you have selected your preferred payment method before continuing.',name,"window.location.href='DuitNowQR.html?amount=' + encodeURIComponent(state.amount)",'Continue to QR Payment');
 return
 }
 if(state.method==='crypto'){

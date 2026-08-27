@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,36 +10,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="payment-gateway.css">
-
 </head>
 <body>
 
     <!-- Demo Interactive Controller-->
-        <div class="demo-bar">
-            <div><strong>Checkout Flow Demo</strong> | Select Page State:</div>
-            <div class="tags">
-                <button class="demo-btn active" onclick="switchState(0)">State 0 (VADERPAY - Bank Selection)</button>
-                <button class="demo-btn" onclick="switchState(1)">State 1: Login</button>
-                <button class="demo-btn" onclick="switchState(2)">State 2: App Authorization</button>
-                <button class="demo-btn" onclick="switchState(3)">State 3: Bank Failure</button>
-                <button class="demo-btn" onclick="switchState(4)">State 4: Merchant Outcome</button>
-                <button class="demo-btn" onclick="switchState(5)">State 5: Success</button>
-            </div>
+    <div class="demo-bar">
+        <div><strong>Checkout Flow Demo</strong> | Select Page State:</div>
+        <div class="tags">
+            <button class="demo-btn active" onclick="switchState(0)">State 0 (VADERPAY - Bank Selection)</button>
+            <button class="demo-btn" onclick="switchState(1)">State 1: Login</button>
+            <button class="demo-btn" onclick="switchState(2)">State 2: App Authorization</button>
+            <button class="demo-btn" onclick="switchState(3)">State 3: Bank Failure</button>
+            <button class="demo-btn" onclick="switchState(4)">State 4: Merchant Outcome</button>
+            <button class="demo-btn" onclick="switchState(5)">State 5: Success</button>
         </div>
-
+    </div>
 
     <div class="viewport-wrapper">
         <div class="main-app-container" id="appMain">
 
-            <!-- Unified Dynamic Header Component -->
-            <header class="secure-header" id="headerContainer">
-                <!-- Rendered dynamically via JS based on State -->
-            </header>
+            <!-- Dynamic Header Component -->
+            <header class="secure-header" id="headerContainer"></header>
 
             <!-- Main Body Container -->
             <div class="content-body" id="contentBody">
 
-                <!-- Left Column: Brand & Security Trust Panel -->
+                <!-- Left Column: Trust Panel -->
                 <aside class="brand-panel" id="brandPanel">
                     <div class="brand-content">
                         <div class="brand-tag">
@@ -60,7 +56,6 @@
                                     <p>Every payment request requires direct authorization with your financial institution.</p>
                                 </div>
                             </div>
-
                             <div class="feature-item">
                                 <div class="feature-icon-wrapper">
                                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
@@ -70,7 +65,6 @@
                                     <p>Instant status updates and push confirmation sent straight to your device.</p>
                                 </div>
                             </div>
-
                             <div class="feature-item">
                                 <div class="feature-icon-wrapper">
                                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
@@ -83,46 +77,38 @@
                         </div>
                     </div>
 
-                    <!-- Anti-Fraud Card -->
+                    <!-- Anti-Fraud Banner -->
                     <div class="anti-fraud-card">
                         <div class="anti-fraud-header">
                             <svg width="18" height="18" fill="none" stroke="#F59E0B" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                             <span>Protect Your Account</span>
                         </div>
                         <p class="anti-fraud-desc">Never share your bank passwords, PINs, or TAC verification codes with anyone via phone, email, or SMS.</p>
-                        <div class="anti-fraud-footer">
-                            <span>Need immediate assistance?</span>
-                            <a href="#help" onclick="alert('Support Line: +603-2176 8000')">Help Desk &rarr;</a>
-                        </div>
                     </div>
                 </aside>
 
                 <!-- Right Column: Interactive Work Area -->
-                <main class="task-panel" id="taskPanel">
-                    <!-- Render Target via JS -->
-                </main>
+                <main class="task-panel" id="taskPanel"></main>
             </div>
         </div>
     </div>
 
-    <!-- Toast Element -->
+    <!-- Toast Notification -->
     <div class="toast-message" id="toast">
         <svg width="16" height="16" fill="none" stroke="#10B981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
         <span id="toastText">Reference number copied</span>
     </div>
 
-    <!-- JavaScript SPA Implementation -->
+    <!-- JavaScript Execution -->
     <script>
-        // Global Transaction Data
         const txData = {
-            merchant: "TopUp Online Merchant",
-            amount: "RM 50.00",
+            merchant: "998Bet Deposit",
+            amount: "MYR 0.00",
             refNo: "BP15Q53UC9W0EI3",
-            timestamp: "2026-08-25 04:02 PM",
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
             accountTarget: "User Account (88****1290)"
         };
 
-        // Available Banks & Specific Configurations
         const bankList = [
             { id: 'pb', name: 'Public Bank', tag: 'PBe Gateway / SecureSign', color: '#D91A2A', initial: 'PBe', userField: 'User ID', logoUrl: '/assets/bank-Pb.svg' },
             { id: 'mb', name: 'Maybank', tag: 'Maybank2u', color: '#FFC800', initial: 'M2U', userField: 'Username', logoUrl: '/assets/bank-maybank.svg' },
@@ -174,22 +160,11 @@
                 case 5: renderState5(taskPanel); break;
             }
 
-            switch (stateNum) {
-                case 0: renderState0(taskPanel); break;
-                case 1: renderState1(taskPanel); break;
-                case 2: renderState2(taskPanel); break;
-                case 3: renderState3(taskPanel); break;
-                case 4: renderState4(taskPanel); break;
-                case 5: renderState5(taskPanel); break;
-            }
-
             requestAnimationFrame(() => {
                 window.scrollTo({ top: 0, behavior: 'auto' });
                 taskPanel.scrollTo({ top: 0, behavior: 'auto' });
             });
         }
-
-
 
         function renderHeader(stateNum) {
             const headerContainer = document.getElementById('headerContainer');
@@ -208,18 +183,13 @@
                     </div>
 
                     <div class="header-actions">
-                        <button class="btn-text-action" aria-label="Change Language">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8" /></svg>
-                            <span>EN</span>
-                        </button>
-                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="switchState(0)">
+                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="window.location.href='index.html'">
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                 `;
             } else {
                 const currentBank = selectedBank || bankList[0];
-
                 const state1HorizontalLogos = {
                     pb: 'assets/bank-horizontal/bank-horizontal-pb.svg',
                     mb: 'assets/bank-horizontal/bank-horizontal-maybank.svg',
@@ -232,34 +202,22 @@
                     cimb: 'assets/bank-horizontal/bank-horizontal-cimb.svg',
                     ocbc: 'assets/bank-horizontal/bank-horizontal-ocbc.svg',
                     islam: 'assets/bank-horizontal/bank-horizontal-bank-islam.svg'
-                    
                 };
 
                 const headerLogoUrl = stateNum >= 1 && stateNum <= 5
                     ? (state1HorizontalLogos[currentBank.id] || currentBank.logoUrl)
                     : currentBank.logoUrl;
 
-                const headerLogoAlt = currentBank.name;
-
                 headerContainer.innerHTML = `
                     <div class="brand-logo">
-                        <img src="${headerLogoUrl}"
-                             alt="${headerLogoAlt}"
-                             class="header-bank-logo"
-                             onerror="handleHeaderImageError(this, '${currentBank.name}')" />
+                        <img src="${headerLogoUrl}" alt="${currentBank.name}" class="header-bank-logo" onerror="handleHeaderImageError(this, '${currentBank.name}')" />
                     </div>
-
                     <div class="header-security-badge">
                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                         <span>256-Bit SSL Secure Payment</span>
                     </div>
-
                     <div class="header-actions">
-                        <button class="btn-text-action" aria-label="Change Language">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8" /></svg>
-                            <span>EN</span>
-                        </button>
-                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="switchState(0)">
+                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="window.location.href='index.html'">
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
@@ -331,7 +289,7 @@
         <div class="tx-meta-item">
           <span>Transaction Ref</span>
           <strong>${txData.refNo}</strong>
-          <button class ="copy-ref-btn" onclick="copyRef()"><img src="assets/copy-icon.svg" /></button>
+          <button class="copy-ref-btn" onclick="copyRef()"><img src="assets/copy-icon.svg" /></button>
         </div>
         <div class="tx-meta-item">
           <span>Created Time</span>
@@ -357,19 +315,19 @@
       <button class="important-notes-trigger" id="importantNotesTrigger" onclick="toggleImportantNotes()">
         <div class="important-notes-header-left">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <h3 class ="important-notes-title">Important Notes</h3>
+          <h3 class="important-notes-title">Important Notes</h3>
         </div>
         <svg class="important-notes-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
 
       <div class="important-notes-body" id="importantNotesBody">
         <ol class="important-notes-list">
-          <li>Kindly ensure your bank account has been activated foronline payment processing.</li>
+          <li>Kindly ensure your bank account has been activated for online payment processing.</li>
           <li>Kindly ensure that you have sufficient funds in the account</li>
           <li>Kindly ensure that you have entered the correct ID and password.</li>
           <li>Please do not click on any submit button more than once.</li>
-          <li>Please do not refesh your browser.</li>
-          <li>Please take note of the reference number if any event youneed to contact our Customer servce forfurtheraction.</li>
+          <li>Please do not refresh your browser.</li>
+          <li>Please take note of the reference number if any event you need to contact our Customer service for further action.</li>
         </ol>
       </div>
     </div>
@@ -397,9 +355,6 @@
           `;
         }
 
-        // ----------------------------------------------------
-        // STATE 0: Select Payment Bank (VADERPAY Gateway)
-        // ----------------------------------------------------
         function renderState0(container) {
             container.innerHTML = `
     <div>
@@ -416,14 +371,6 @@
 
     <div style="margin-top: 24px;">
       <h3 style="font-size:15px; font-weight:600; color:var(--pb-navy); margin-bottom:12px;">Supported Banks</h3>
-
-      <div class="form-group" style="margin-bottom: 12px;">
-        <div class="input-wrapper">
-          <svg class="input-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" id="bankSearchInput" class="form-input" placeholder="Search bank name..." oninput="filterBanks(this.value)">
-        </div>
-      </div>
-
       <div class="bank-list-container" id="bankListContainer">
         ${generateBankListHTML(bankList)}
       </div>
@@ -432,42 +379,23 @@
         <button class="btn-primary" id="proceedBankBtn" ${!selectedBank ? 'disabled' : ''} onclick="handleProceedBank()">
           <span>${selectedBank ? `Proceed to Login with ${selectedBank.name} &rarr;` : 'Please Select a Bank to Continue'}</span>
         </button>
-        <p style="font-size:12px; color:var(--pb-slate-gray); text-align:center; margin-top:8px;">
-        </p>
       </div>
     </div>
 
     ${getImportantNotesHTML()}
   `;
 
-            startTimer(298, 'timerClock', () => {
-                const btn = document.getElementById('proceedBankBtn');
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerText = "Payment Session Expired";
-                }
-                showToast("Transaction time limit exceeded");
-            });
-
-            if (selectedBank) {
-                selectBank(selectedBank.id);
-            }
+            startTimer(298, 'timerClock');
+            if (selectedBank) selectBank(selectedBank.id);
         }
 
         function generateBankListHTML(list) {
-            if (list.length === 0) {
-                return `<div class="bank-empty-state">No bank found. Please try another search term.</div>`;
-            }
-
             return list.map(bank => {
                 const isSelected = selectedBank && selectedBank.id === bank.id;
                 return `
       <div class="bank-card ${isSelected ? 'selected' : ''}" id="bank-card-${bank.id}" onclick="selectBank('${bank.id}')">
         <div class="bank-logo-container">
-          <img src="${bank.logoUrl}"
-               alt="${bank.name}"
-               class="bank-logo-img"
-               onerror="handleImageError(this, '${bank.initial}', '${bank.color}')" />
+          <img src="${bank.logoUrl}" alt="${bank.name}" class="bank-logo-img" onerror="handleImageError(this, '${bank.initial}', '${bank.color}')" />
         </div>
         <div class="bank-info">
           <div class="bank-name">${bank.name}</div>
@@ -477,15 +405,6 @@
       </div>
     `;
             }).join('');
-        }
-
-        function filterBanks(query) {
-            const keyword = query.toLowerCase().trim();
-            const filtered = bankList.filter(b => b.name.toLowerCase().includes(keyword));
-            const container = document.getElementById('bankListContainer');
-            if (container) {
-                container.innerHTML = generateBankListHTML(filtered);
-            }
         }
 
         function selectBank(bankId) {
@@ -510,19 +429,9 @@
 
         function handleProceedBank() {
             if (!selectedBank) return;
-
-            const btn = document.getElementById('proceedBankBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<span>Loading ${selectedBank.name} Login...</span>`;
-
-            setTimeout(() => {
-                switchState(1);
-            }, 400);
+            switchState(1);
         }
 
-        // ----------------------------------------------------
-        // STATE 1: Bank Login Verification
-        // ----------------------------------------------------
         function renderState1(container) {
             const currentBank = selectedBank || bankList[0];
             const userFieldLabel = currentBank.userField || 'User ID';
@@ -544,23 +453,31 @@
               </button>
             </div>
 
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px;">
+              <div style="border:1px solid #dce4ee;border-radius:10px;padding:12px 14px;background:#f8fafc;">
+                <div style="font-size:11px;color:var(--pb-slate-gray);margin-bottom:5px;">SELECTED BANK</div>
+                <strong style="font-size:15px;color:var(--pb-navy);">${currentBank.name}</strong>
+              </div>
+              <div style="border:1px solid #dce4ee;border-radius:10px;padding:12px 14px;background:#f8fafc;">
+                <div style="font-size:11px;color:var(--pb-slate-gray);margin-bottom:5px;">DEPOSIT AMOUNT</div>
+                <strong style="font-size:15px;color:var(--pb-navy);">${txData.amount}</strong>
+              </div>
+            </div>
+
             ${getSummaryHTML()}
 
             <form onsubmit="event.preventDefault(); switchState(2);">
               <div class="form-group">
                 <label class="form-label">${currentBank.name} ${userFieldLabel}</label>
                 <div class="input-wrapper">
-                  <svg class="input-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                   <input type="text" class="form-input" placeholder="Enter your ${userFieldLabel.toLowerCase()}" required>
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Password</label>
                 <div class="input-wrapper">
-                  <svg class="input-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                   <input type="password" class="form-input" placeholder="Enter your password" required>
                 </div>
-                <div class="field-sublink"><a href="#" onclick="showToast('Redirecting to ${currentBank.name} Support...')">Forgot ${userFieldLabel} / Password?</a></div>
               </div>
 
               <div style="display: flex; gap: 12px; margin-top: 20px;">
@@ -574,27 +491,21 @@
           `;
         }
 
-        // ----------------------------------------------------
-        // STATE 2: App Authorization (SecureSign / 2FA)
-        // ----------------------------------------------------
         function renderState2(container) {
             const currentBank = selectedBank || bankList[0];
 
             container.innerHTML = `
             ${getStepperHTML(2)}
             <div class="auth-state-box">
-              <div class="auth-illustration">
-                <div class="pulse-ring"></div>
-                <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              <div class="auth-illustration" aria-hidden="true">
+                <span class="pulse-ring"></span>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="18" r="1" fill="currentColor"/>
+                </svg>
               </div>
               <h2 style="font-size:20px; font-weight:700; color:var(--pb-navy); margin-bottom:6px;">App Authorization Required</h2>
               <p style="font-size:14px; color:var(--pb-slate-gray);">A notification has been sent to your registered <strong>${currentBank.name}</strong> mobile app.</p>
-
-              <div class="app-steps-list">
-                <div class="app-step-item"><div class="app-step-idx">1</div><span>Open <strong>${currentBank.name} Mobile App</strong> on your phone.</span></div>
-                <div class="app-step-item"><div class="app-step-idx">2</div><span>Tap the <strong>Secure Verification</strong> push notification.</span></div>
-                <div class="app-step-item"><div class="app-step-idx">3</div><span>Verify amount <strong>${txData.amount}</strong> and tap <strong>Approve</strong>.</span></div>
-              </div>
 
               <button class="btn-primary" onclick="switchState(5)"><span>I Have Approved on Mobile App</span></button>
               <button class="btn-secondary" style="margin-top: 10px;" onclick="switchState(3)"><span>Simulate Approval Failure</span></button>
@@ -602,39 +513,25 @@
           `;
         }
 
-        // ----------------------------------------------------
-        // STATE 3: Bank Verification Failure
-        // ----------------------------------------------------
         function renderState3(container) {
             container.innerHTML = `
             ${getStepperHTML(3)}
-            <div class ="result-status-card">
-          <!--Dynamic Motion Animated Error Badge-->
-            <div class ="motion-error-wrapper">
-            <div class ="motion-error-ring"></div>
-
-            <div class ="motion-error-circle">
-                <svg class ="motion-error-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </div>
-
-            <!--Bursting Particle Elements-->
-            <div class ="motion-particle p-square-red" style="--dx:-12px; --dy:-14px;"></div>
-            <div class ="motion-particle p-circle-orange" style="--dx:14px; --dy:-12px;"></div>
-            <div class ="motion-particle p-triangle-yellow" style="--dx:-16px; --dy:10px;"></div>
-            <div class ="motion-particle p-square-blue" style="--dx:15px; --dy:12px;"></div>
-            <div class ="motion-particle p-curved-line" style="--dx:0px; --dy:-16px;"></div>
-            </div>
+            <div class="result-status-card">
+              <div class="motion-error-wrapper" aria-hidden="true">
+                <span class="motion-error-ring"></span>
+                <span class="motion-particle p-square-red"></span>
+                <span class="motion-particle p-circle-orange"></span>
+                <span class="motion-particle p-triangle-yellow"></span>
+                <span class="motion-particle p-square-blue"></span>
+                <span class="motion-particle p-curved-line"></span>
+                <div class="motion-error-circle">
+                  <svg class="motion-error-cross" viewBox="0 0 48 48" fill="none">
+                    <path d="M14 14L34 34M34 14L14 34" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
               <h2 class="result-title">Payment Unsuccessful</h2>
               <p class="result-subtitle">Your transaction was declined or timed out during authorization.</p>
-
-              <div class="no-deduction-banner">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                No money was deducted from your bank account.
-              </div>
-
               <div style="display:flex; gap:12px; margin-top:20px;">
                 <button class="btn-primary" onclick="switchState(0)"><span>Try Again</span></button>
                 <button class="btn-secondary" onclick="switchState(4)"><span>Return to Merchant</span></button>
@@ -643,73 +540,100 @@
           `;
         }
 
-        // ----------------------------------------------------
-        // STATE 4: Merchant Failure Outcome
-        // ----------------------------------------------------
         function renderState4(container) {
             container.innerHTML = `
             <div class="result-status-card">
-            <!--Dynamic Motion Animated Warning Badge-->
-            <div class ="motion-warning-wrapper">
-               <div class ="motion-warning-ring"></div>
-
-                <div class ="motion-warning-circle">
-                  <svg class ="motion-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              <div class="motion-warning-wrapper" aria-hidden="true">
+                <span class="motion-warning-ring"></span>
+                <div class="motion-warning-circle">
+                  <svg class="motion-warning-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 8L42 40H6L24 8Z" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+                    <path d="M24 18V28" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="24" cy="34" r="1.8" fill="currentColor"/>
                   </svg>
                 </div>
               </div>
-              <h2 class="result-title">Returned to ${txData.merchant}</h2>
+              <h2 class="result-title">Returned to TopUp Online Merchant</h2>
               <p class="result-subtitle">The order was not completed. Please choose an alternative payment method.</p>
-
-              <button class="btn-primary" onclick="switchState(0)"><span>Back to Select Bank</span></button>
+              <button class="btn-primary" onclick="window.location.href='index.html'"><span>Back to Select Bank</span></button>
             </div>
           `;
         }
 
-        // ----------------------------------------------------
-        // STATE 5: Payment Success Receipt
-        // ----------------------------------------------------
         function renderState5(container) {
             container.innerHTML = `
             ${getStepperHTML(3)}
             <div class="result-status-card">
-               <div class ="success-motion-wrapper">
-                    <div class ="ripple-ring"></div>
-                    <div class ="ripple-ring"></div>
-
-                    <div class ="success-circle">
-                        <svg class ="checkmark-svg" viewBox="0 0 52 52">
-                            <path d="M14 27 l10 10 l20 -20" />
-                        </svg>
-                    </div>
-
-                    <div class ="confetti-container">
-                        <div class ="confetti" style="--tw-x: -30px; --tw-y: -30px;"></div>
-                        <div class ="confetti" style="--tw-x: 35px; --tw-y: -25px;"></div>
-                        <div class ="confetti" style="--tw-x: -35px; --tw-y: 20px;"></div>
-                        <div class ="confetti" style="--tw-x: 30px; --tw-y: 30px;"></div>
-                        <div class ="confetti" style="--tw-x: 0px; --tw-y: -40px;"></div>
-                        <div class ="confetti" style="--tw-x: 5px; --tw-y: 40px;"></div>
-                    </div>
+              <div class="success-container">
+                <div class="success-motion-wrapper" aria-hidden="true">
+                  <span class="ripple-ring"></span>
+                  <span class="ripple-ring"></span>
+                  <div class="confetti-container">
+                    <span class="confetti" style="--tw-x:-32px;--tw-y:-28px"></span>
+                    <span class="confetti" style="--tw-x:30px;--tw-y:-34px"></span>
+                    <span class="confetti" style="--tw-x:-38px;--tw-y:22px"></span>
+                    <span class="confetti" style="--tw-x:40px;--tw-y:26px"></span>
+                    <span class="confetti" style="--tw-x:4px;--tw-y:-42px"></span>
+                    <span class="confetti" style="--tw-x:2px;--tw-y:40px"></span>
+                  </div>
+                  <div class="success-circle">
+                    <svg class="checkmark-svg" viewBox="0 0 52 52" aria-hidden="true">
+                      <path d="M14 27l8 8 16-18"/>
+                    </svg>
+                  </div>
                 </div>
+              </div>
               <h2 class="result-title">Payment Successful!</h2>
               <p class="result-subtitle">Your transaction of <strong>${txData.amount}</strong> has been successfully processed.</p>
-
               ${getSummaryHTML()}
-
-              <button class="btn-primary" onclick="switchState(0)"><span>Done & Return to Merchant</span></button>
+              <button class="btn-primary" onclick="window.location.href='index.html'"><span>Done & Return to Merchant</span></button>
             </div>
           `;
         }
 
-        // Demo Controls Initializer
+        // Initialize from URL parameters
         window.addEventListener('DOMContentLoaded', () => {
-            switchState(0);
+            const urlParams = new URLSearchParams(window.location.search);
+            let passedBank = urlParams.get('bank');
+            let passedAmount = urlParams.get('amount');
+
+            // Fallback for navigation where the query string is lost.
+            if (!passedBank || !passedAmount) {
+                try {
+                    const saved = JSON.parse(sessionStorage.getItem('bankTransferFlow') || 'null');
+                    if (saved) {
+                        passedBank = passedBank || saved.bank;
+                        passedAmount = passedAmount || saved.amount;
+                    }
+                } catch (e) {}
+            }
+
+            if (passedAmount && !isNaN(parseFloat(passedAmount))) {
+                txData.amount = `MYR ${parseFloat(passedAmount).toFixed(2)}`;
+            }
+
+            if (passedBank) {
+                const normalizedPassedBank = decodeURIComponent(String(passedBank)).trim().toLowerCase();
+                const bankAliases = {
+                    'public bank berhad': 'public bank'
+                };
+                const normalizedBankName = bankAliases[normalizedPassedBank] || normalizedPassedBank;
+
+                const foundBank = bankList.find(b => 
+                    b.name.toLowerCase() === normalizedBankName || 
+                    b.id.toLowerCase() === normalizedPassedBank
+                );
+                if (foundBank) {
+                    selectedBank = foundBank;
+                }
+            }
+
+            if (passedBank && passedAmount) {
+                switchState(1);
+            } else {
+                switchState(0);
+            }
         });
     </script>
 </body>
-
 </html>

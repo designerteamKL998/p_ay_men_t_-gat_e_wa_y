@@ -47,7 +47,7 @@
                 </div>
                 <div class="summary-item">
                     <div class="label">Amount</div>
-                    <div class="value amount-highlight">RM 10.00</div>
+                    <div class="value amount-highlight"><span data-payment-amount>RM 10.00</span></div>
                 </div>
             </div>
 
@@ -60,13 +60,13 @@
                     <ol class="steps-list">
                         <li>Open your bank or e-Wallet app.</li>
                         <li>Select <strong>"Scan QR / Scan & Pay"</strong>.</li>
-                        <li>Scan this QR code and verify the merchant and <strong>RM 10.00</strong> amount.</li>
+                        <li>Scan this QR code and verify the merchant and <strong data-payment-amount>RM 10.00</strong> amount.</li>
                         <li>Confirm and complete payment inside your app.</li>
                     </ol>
 
                     <div class="security-box">
                         <h5>Check Before Payment</h5>
-                        <p>• Ensure your app displays the merchant as <strong>TopUp</strong> and the amount as <strong>RM 10.00</strong>.</p>
+                        <p>• Ensure your app displays the merchant as <strong>TopUp</strong> and the amount as <strong data-payment-amount>RM 10.00</strong>.</p>
                         <p>• If details do not match, cancel payment immediately.</p>
                         <p>• Never share payment screenshots, passwords, TAC, or OTP with anyone.</p>
                     </div>
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="duitnow-logo-text">DuitNow QR</div>
-                        <div class="notice-text">Pay exactly RM 10.00 — Do not alter amount</div>
+                        <div class="notice-text">Pay exactly <span data-payment-amount>RM 10.00</span> — Do not alter amount</div>
 
                         <div class="qr-actions">
                             <button class="btn-secondary" onclick="refreshQR()">Refresh QR</button>
@@ -136,7 +136,7 @@
                 <div class="receipt-card">
                     <div class="receipt-row">
                         <span style="color: var(--text-sub);">Amount</span>
-                        <span style="font-weight: 600;">RM 10.00</span>
+                        <span style="font-weight: 600;" data-payment-amount>RM 10.00</span>
                     </div>
                     <div class="receipt-row">
                         <span style="color: var(--text-sub);">Payment Method</span>
@@ -180,6 +180,17 @@
         const timerElem = document.getElementById('timer');
         const qrWrapper = document.getElementById('qrWrapper');
         const mainSubmitBtn = document.getElementById('mainSubmitBtn');
+
+        const amountFromUrl = new URLSearchParams(window.location.search).get('amount');
+        const amount = Number(amountFromUrl);
+
+        if (Number.isFinite(amount) && amount > 0) {
+            const formattedAmount = `RM ${amount.toFixed(2)}`;
+
+            document.querySelectorAll('[data-payment-amount]').forEach((element) => {
+                element.textContent = formattedAmount;
+            });
+        }
 
         const countdown = setInterval(() => {
             if (timeLeft <= 0) {
